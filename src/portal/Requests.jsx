@@ -9,10 +9,14 @@ const STATUS = { sending: 'Sending', sent: 'Sent', logged: 'Not delivered (log m
 
 function EmailLog({ s, d }) {
   const [server, setServer] = useState(null);
+  const [query, setQuery] = useState('');
   useEffect(() => {
     emailServerStatus().then(setServer);
   }, []);
-  const mails = s.outbox || [];
+  const q = query.trim().toLowerCase();
+  const mails = (s.outbox || []).filter(
+    (m) => !q || [m.to, m.subject, m.body, m.status].join(' ').toLowerCase().includes(q),
+  );
   const modeText = {
     smtp: 'delivering through your mail account',
     outlook: 'delivering through Outlook',
@@ -21,7 +25,16 @@ function EmailLog({ s, d }) {
   };
   return (
     <section className="pt-panel">
-      <h3>Emails</h3>
+      <div className="pt-field inline">
+        <h3>Emails</h3>
+        <input
+          type="search"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Search emails"
+          aria-label="Search emails"
+        />
+      </div>
       <p className={server?.ok ? 'pt-simbar run' : 'pt-simbar warning'}>
         {server === null && 'Checking the email server...'}
         {server?.ok && `Email server connected: ${modeText[server.mode] || server.mode}.`}
@@ -192,14 +205,29 @@ function Review({ request, s, d, onDone }) {
 
 export default function Requests({ s, d }) {
   const [reviewing, setReviewing] = useState(null);
+  const [query, setQuery] = useState('');
   const requests = s.requests || [];
-  const pending = requests.filter((r) => r.status === 'pending');
-  const decided = requests.filter((r) => r.status !== 'pending').sort((a, b) => b.decidedAt - a.decidedAt);
+  const q = query.trim().toLowerCase();
+  const matches = (r) =>
+    !q || [r.first, r.last, r.username, r.email, r.role, r.status].join(' ').toLowerCase().includes(q);
+  const pending = requests.filter((r) => r.status === 'pending' && matches(r));
+  const decided = requests
+    .filter((r) => r.status !== 'pending' && matches(r))
+    .sort((a, b) => b.decidedAt - a.decidedAt);
 
   return (
     <>
       <section className="pt-panel">
-        <h3>Waiting for a decision ({pending.length})</h3>
+        <div className="pt-field inline">
+          <h3>Waiting for a decision ({pending.length})</h3>
+          <input
+            type="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search requests"
+            aria-label="Search requests"
+          />
+        </div>
         {pending.length === 0 && <p className="pt-empty">No pending requests.</p>}
         {pending.map((r) => (
           <article key={r.id} className="pt-request">

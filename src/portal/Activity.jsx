@@ -13,9 +13,17 @@ const TYPES = {
 
 export default function Activity({ users, activity }) {
   const [who, setWho] = useState('all');
+  const [query, setQuery] = useState('');
   const byId = Object.fromEntries(users.map((u) => [u.id, u]));
   const mine = activity.filter((a) => byId[a.uid]);
-  const rows = mine.filter((a) => who === 'all' || a.uid === who).slice(0, 200);
+  const q = query.trim().toLowerCase();
+  const visibleUsers = users.filter(
+    (u) => !q || [u.name, u.username, u.email, u.role].join(' ').toLowerCase().includes(q),
+  );
+  const visibleIds = new Set(visibleUsers.map((u) => u.id));
+  const rows = mine
+    .filter((a) => (who === 'all' || a.uid === who) && visibleIds.has(a.uid))
+    .slice(0, 200);
 
   const summary = (u) => {
     const own = mine.filter((a) => a.uid === u.id);
@@ -47,7 +55,7 @@ export default function Activity({ users, activity }) {
             </tr>
           </thead>
           <tbody>
-            {users.map((u) => {
+            {visibleUsers.map((u) => {
               const st = summary(u);
               return (
                 <tr key={u.id}>
@@ -65,6 +73,13 @@ export default function Activity({ users, activity }) {
       <section className="pt-panel pt-scroll">
         <div className="pt-field inline">
           <h3>Every recorded movement</h3>
+          <input
+            type="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search people or roles"
+            aria-label="Search people or roles"
+          />
           <select value={who} onChange={(e) => setWho(e.target.value)} aria-label="Filter by person">
             <option value="all">Everyone</option>
             {users.map((u) => (

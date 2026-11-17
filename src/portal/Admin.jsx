@@ -413,10 +413,21 @@ function Profile({ user, state, onClose }) {
 export function GroupsPanel({ s, d }) {
   const [page, setPage] = useState(1);
   const [open, setOpen] = useState(null);
+  const [query, setQuery] = useState('');
   const size = 6;
-  const pages = Math.max(1, Math.ceil(s.groups.length / size));
-  const current = Math.min(page, pages);
-  const rows = s.groups.slice((current - 1) * size, current * size);
+  const q = query.trim().toLowerCase();
+  const filtered = s.groups.filter(
+    (g) =>
+      !q ||
+      [g.name, ...g.instructorIds, ...g.studentIds]
+        .map((id) => s.users.find((u) => u.id === id)?.name || id)
+        .join(' ')
+        .toLowerCase()
+        .includes(q),
+  );
+  const filteredPages = Math.max(1, Math.ceil(filtered.length / size));
+  const current = Math.min(page, filteredPages);
+  const rows = filtered.slice((current - 1) * size, current * size);
   const name = (id) => s.users.find((u) => u.id === id)?.name || 'Unknown';
   const group =
     open === 'new' ? { name: '', instructorIds: [], studentIds: [] } : s.groups.find((g) => g.id === open);
@@ -424,6 +435,16 @@ export function GroupsPanel({ s, d }) {
   return (
     <>
       <div className="pt-filter">
+        <input
+          type="search"
+          value={query}
+          onChange={(e) => {
+            setQuery(e.target.value);
+            setPage(1);
+          }}
+          placeholder="Search groups or members"
+          aria-label="Search groups or members"
+        />
         <button className="pt-btn" onClick={() => setOpen('new')}>
           New group
         </button>
@@ -462,7 +483,7 @@ export function GroupsPanel({ s, d }) {
           <button className="pt-btn ghost" disabled={current === 1} onClick={() => setPage(current - 1)}>
             Previous
           </button>
-          {Array.from({ length: pages }, (_, i) => (
+          {Array.from({ length: filteredPages }, (_, i) => (
             <button
               key={i}
               className={`pt-btn ghost ${current === i + 1 ? 'on' : ''}`}
@@ -471,10 +492,10 @@ export function GroupsPanel({ s, d }) {
               {i + 1}
             </button>
           ))}
-          <button className="pt-btn ghost" disabled={current === pages} onClick={() => setPage(current + 1)}>
+          <button className="pt-btn ghost" disabled={current === filteredPages} onClick={() => setPage(current + 1)}>
             Next
           </button>
-          <span className="pt-empty">{s.groups.length} groups</span>
+          <span className="pt-empty">{filtered.length} groups</span>
         </div>
       </section>
       {open && group && (
@@ -520,7 +541,14 @@ export default function Admin() {
   const [adding, setAdding] = useState(false);
   const [profileId, setProfileId] = useState(null);
   const [userPage, setUserPage] = useState(1);
-  const rows = s.users.filter((u) => u.role !== 'admin' && (role === 'all' || u.role === role));
+  const [userQuery, setUserQuery] = useState('');
+  const query = userQuery.trim().toLowerCase();
+  const rows = s.users.filter(
+    (u) =>
+      u.role !== 'admin' &&
+      (role === 'all' || u.role === role) &&
+      (!query || [u.name, u.username, u.email, u.role, u.trainingRole].join(' ').toLowerCase().includes(query)),
+  );
   const userPageSize = 10;
   const userPages = Math.max(1, Math.ceil(rows.length / userPageSize));
   const currentUserPage = Math.min(userPage, userPages);
@@ -571,6 +599,16 @@ export default function Admin() {
       {tab === 'users' && (
         <>
           <div className="pt-filter">
+            <input
+              type="search"
+              value={userQuery}
+              onChange={(e) => {
+                setUserQuery(e.target.value);
+                setUserPage(1);
+              }}
+              placeholder="Search users, usernames or roles"
+              aria-label="Search users, usernames or roles"
+            />
             {['all', 'instructor', 'student', 'viewer'].map((r) => (
               <button
                 key={r}

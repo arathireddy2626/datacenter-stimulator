@@ -157,6 +157,7 @@ export default function Topologies({ s, d }) {
   const [from, setFrom] = useState(null);
   const [drag, setDrag] = useState(null);
   const [selLink, setSelLink] = useState(null);
+  const [catalogQuery, setCatalogQuery] = useState('');
   const host = useRef(null);
   const topo = s.topologies.find((t) => t.id === selected) || s.topologies[0];
   const kinds = Object.keys(INFO);
@@ -237,6 +238,12 @@ export default function Topologies({ s, d }) {
   };
   const byId = topo ? Object.fromEntries(topo.nodes.map((n) => [n.id, n])) : {};
   const customKeys = new Set(s.types.map((t) => t.key));
+  const catalogFilter = catalogQuery.trim().toLowerCase();
+  const catalogKinds = kinds.filter(
+    (k) =>
+      !catalogFilter ||
+      [labelOf(k), KIND_CATEGORY[k], INFO[k].normal, INFO[k].fail].join(' ').toLowerCase().includes(catalogFilter),
+  );
 
   return (
     <div className="pt-designer">
@@ -247,6 +254,13 @@ export default function Topologies({ s, d }) {
             {adding ? 'Close' : '+ Add equipment'}
           </button>
         </div>
+        <input
+          type="search"
+          value={catalogQuery}
+          onChange={(e) => setCatalogQuery(e.target.value)}
+          placeholder="Search equipment"
+          aria-label="Search equipment"
+        />
         {adding ? (
           <AddTypeForm d={d} onDone={() => setAdding(false)} />
         ) : (
@@ -255,7 +269,7 @@ export default function Topologies({ s, d }) {
           </p>
         )}
         <div className="pt-cat-list">
-          {kinds.map((k) => {
+          {catalogKinds.map((k) => {
             const Icon = iconOf(k);
             return (
               <div key={k} className={`pt-pal-wrap ${armed === k ? 'armed' : ''}`}>
