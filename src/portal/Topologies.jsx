@@ -236,6 +236,11 @@ export default function Topologies({ s, d }) {
     d({ t: 'delTopo', id: topo.id });
     setSelected('');
   };
+  const removeLink = (index) => {
+    if (index === null || !topo?.links[index]) return;
+    save({ ...topo, links: topo.links.filter((_, i) => i !== index) });
+    setSelLink(null);
+  };
   const byId = topo ? Object.fromEntries(topo.nodes.map((n) => [n.id, n])) : {};
   const customKeys = new Set(s.types.map((t) => t.key));
   const catalogFilter = catalogQuery.trim().toLowerCase();
@@ -357,6 +362,13 @@ export default function Topologies({ s, d }) {
               >
                 {connect ? (from ? 'Pick the second item' : 'Pick the first item') : 'Connect items'}
               </button>
+              <button
+                className="pt-btn ghost danger"
+                disabled={selLink === null}
+                onClick={() => removeLink(selLink)}
+              >
+                Disconnect selected
+              </button>
               <button className="pt-btn" onClick={() => save({ ...topo, published: !topo.published })}>
                 {topo.published ? 'Unpublish' : 'Publish to instructors and students'}
               </button>
@@ -372,6 +384,7 @@ export default function Topologies({ s, d }) {
               topo={topo}
               selectedLink={selLink}
               onLinkClick={setSelLink}
+              onLinkDelete={removeLink}
               at={at}
               picked={from}
               hostRef={host}

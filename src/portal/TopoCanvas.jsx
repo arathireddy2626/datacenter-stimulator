@@ -64,6 +64,7 @@ export default function TopoCanvas({
   onCanvasClick,
   selectedLink,
   onLinkClick,
+  onLinkDelete,
 }) {
   const by = Object.fromEntries(topo.nodes.map((n) => [n.id, at(n)]));
   return (
@@ -101,6 +102,10 @@ export default function TopoCanvas({
                   onClick={(e) => {
                     e.stopPropagation();
                     onLinkClick(i);
+                  }}
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    onLinkDelete?.(i);
                   }}
                 />
               )}
