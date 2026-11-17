@@ -47,3 +47,11 @@ export function deliverEmail(d, entry) {
     return result;
   });
 }
+
+export function openOutlookDraft({ to, subject, body }) {
+  const url = new URL('https://outlook.office.com/mail/deeplink/compose');
+  url.searchParams.set('to', to);
+  url.searchParams.set('subject', subject);
+  url.searchParams.set('body', body);
+  window.location.assign(url.toString());
+}

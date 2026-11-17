@@ -11,7 +11,7 @@ import Topologies from './Topologies';
 import Requests from './Requests';
 import { GroupLinks, GroupMembers } from './GroupRoster';
 import { makePassword } from './access';
-import { deliverEmail } from './mailer';
+import { deliverEmail, openOutlookDraft } from './mailer';
 
 const statusOf = (u) => (!u.active ? 'Disabled' : u.mustChange ? 'Awaiting first login' : 'Active');
 const copy = (text) => navigator.clipboard?.writeText(text);
@@ -191,7 +191,7 @@ function AddUser({ state, d, onCreate, onClose }) {
     };
     onCreate(user, groupIds);
     d({ t: 'outbox', mail });
-    setCreated({ ...user, mailStatus: 'sending' });
+    setCreated({ ...user, mail, mailStatus: 'sending' });
     deliverEmail(d, mail).then((result) => {
       setCreated((current) => ({
         ...current,
@@ -232,9 +232,19 @@ function AddUser({ state, d, onCreate, onClose }) {
               <p className="pt-simbar warning">Email was logged but not delivered.</p>
             )}
             {created.mailStatus === 'failed' && (
-              <p className="pt-err" role="alert">
-                Email could not be sent: {created.mailError}
-              </p>
+              <>
+                <p className="pt-err" role="alert">
+                  Email could not be sent: {created.mailError}
+                </p>
+                <button className="pt-btn" onClick={() => openOutlookDraft(created.mail)}>
+                  Send through Outlook
+                </button>
+              </>
+            )}
+            {created.mailStatus === 'test' && (
+              <button className="pt-btn" onClick={() => openOutlookDraft(created.mail)}>
+                Send through Outlook
+              </button>
             )}
             <div className="pt-actions">
               <button className="pt-btn ghost" onClick={onClose}>

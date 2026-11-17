@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { ACCOUNT_ROLES, TRAINING_ROLES } from './data';
 import { makePassword } from './access';
-import { deliverEmail, emailServerStatus } from './mailer';
+import { deliverEmail, emailServerStatus, openOutlookDraft } from './mailer';
 
 const when = (t) => new Date(t).toLocaleString();
 
@@ -49,9 +49,14 @@ function EmailLog({ s, d }) {
               </a>
             )}
             {(m.status === 'failed' || m.status === 'logged' || !m.status) && (
-              <button className="pt-btn ghost" onClick={() => deliverEmail(d, m)}>
-                Send again
-              </button>
+              <>
+                <button className="pt-btn ghost" onClick={() => deliverEmail(d, m)}>
+                  Send again
+                </button>
+                <button className="pt-btn ghost" onClick={() => openOutlookDraft(m)}>
+                  Open Outlook draft
+                </button>
+              </>
             )}
           </div>
         </details>
