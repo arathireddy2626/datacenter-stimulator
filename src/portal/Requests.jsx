@@ -41,7 +41,7 @@ function EmailLog({ s, d }) {
             </span>
           </summary>
           <pre>{m.body}</pre>
-          {m.error && <p className="pt-err">{m.error}</p>}
+          {m.error && <p className="pt-err">Automatic delivery failed. Use the Outlook draft option.</p>}
           <div className="pt-actions">
             {m.previewUrl && (
               <a className="pt-btn ghost" href={m.previewUrl} target="_blank" rel="noreferrer">

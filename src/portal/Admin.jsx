@@ -233,9 +233,7 @@ function AddUser({ state, d, onCreate, onClose }) {
             )}
             {created.mailStatus === 'failed' && (
               <>
-                <p className="pt-err" role="alert">
-                  Email could not be sent: {created.mailError}
-                </p>
+                <p className="pt-empty">Use Outlook to send the login details.</p>
                 <button className="pt-btn" onClick={() => openOutlookDraft(created.mail)}>
                   Send through Outlook
                 </button>
