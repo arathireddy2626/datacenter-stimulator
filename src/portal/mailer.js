@@ -32,7 +32,7 @@ export async function sendEmail({ to, subject, body }) {
 
 export function deliverEmail(d, entry) {
   d({ t: 'outboxUpdate', id: entry.id, patch: { status: 'sending', error: undefined } });
-  sendEmail({ to: entry.to, subject: entry.subject, body: entry.body }).then((result) =>
+  return sendEmail({ to: entry.to, subject: entry.subject, body: entry.body }).then((result) => {
     d({
       t: 'outboxUpdate',
       id: entry.id,
@@ -43,6 +43,7 @@ export function deliverEmail(d, entry) {
             previewUrl: result.previewUrl,
           }
         : { status: 'failed', error: result.error },
-    }),
-  );
+    });
+    return result;
+  });
 }

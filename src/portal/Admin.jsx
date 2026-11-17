@@ -191,8 +191,15 @@ function AddUser({ state, d, onCreate, onClose }) {
     };
     onCreate(user, groupIds);
     d({ t: 'outbox', mail });
-    deliverEmail(d, mail);
-    setCreated({ ...user, mail });
+    setCreated({ ...user, mailStatus: 'sending' });
+    deliverEmail(d, mail).then((result) => {
+      setCreated((current) => ({
+        ...current,
+        mailStatus: result.ok ? result.mode : 'failed',
+        mailError: result.ok ? '' : result.error,
+        previewUrl: result.previewUrl,
+      }));
+    });
   };
 
   if (created) {
@@ -202,9 +209,33 @@ function AddUser({ state, d, onCreate, onClose }) {
           <div>
             <h3>Profile created for {created.name}</h3>
             <p className="pt-empty">
-              Login details are being sent to <b>{created.email}</b>. They choose their own password at
-              "Activate your account" on the sign-in page.
+              Login details are being sent to <b>{created.email}</b>.
             </p>
+            {created.mailStatus === 'sending' && <p className="pt-simbar">Sending the email...</p>}
+            {['sent', 'smtp', 'outlook'].includes(created.mailStatus) && (
+              <p className="pt-simbar run">Email sent successfully.</p>
+            )}
+            {created.mailStatus === 'test' && (
+              <p className="pt-simbar warning">
+                Demo email created, but it was not delivered to Outlook.
+                {created.previewUrl && (
+                  <>
+                    {' '}
+                    <a href={created.previewUrl} target="_blank" rel="noreferrer">
+                      Open the demo preview
+                    </a>
+                  </>
+                )}
+              </p>
+            )}
+            {created.mailStatus === 'logged' && (
+              <p className="pt-simbar warning">Email was logged but not delivered.</p>
+            )}
+            {created.mailStatus === 'failed' && (
+              <p className="pt-err" role="alert">
+                Email could not be sent: {created.mailError}
+              </p>
+            )}
             <div className="pt-actions">
               <button className="pt-btn ghost" onClick={onClose}>
                 Done
