@@ -1,11 +1,19 @@
 import { createContext, useContext, useEffect, useReducer } from 'react';
-import { DEFAULT_FAILURES, FAIL, FAILURES, GROUPS, USERS } from './data';
+import {
+  DEFAULT_FAILURES,
+  DEMO_OUTBOX,
+  DEMO_REQUESTS,
+  FAIL,
+  FAILURES,
+  GROUPS,
+  USERS,
+} from './data';
 import { SIM_ACTIONS } from './sim';
 import { syncCatalog } from './catalog';
 import { DEFAULT_TOPOLOGY } from './power';
 
 const KEY = 'equnix-v5';
-const DEMO_DATA_VERSION = 2;
+const DEMO_DATA_VERSION = 3;
 const load = () => {
   try {
     const s = JSON.parse(localStorage.getItem(KEY));
@@ -193,8 +201,8 @@ function migrate(s) {
   if (s.demoDataVersion !== DEMO_DATA_VERSION) {
     s.users = USERS.map((u) => ({ ...u }));
     s.groups = GROUPS.map((g) => ({ ...g, instructorIds: [...g.instructorIds], studentIds: [...g.studentIds] }));
-    s.requests = [];
-    s.outbox = [];
+    s.requests = DEMO_REQUESTS.map((request) => ({ ...request }));
+    s.outbox = DEMO_OUTBOX.map((mail) => ({ ...mail }));
     s.demoDataVersion = DEMO_DATA_VERSION;
   }
   s.requests = s.requests || [];

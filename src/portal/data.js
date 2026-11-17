@@ -117,6 +117,98 @@ export const GROUPS = groupNames.map((name, index) => ({
   studentIds: Array.from({ length: 10 }, (_, offset) => studentIds[(index * 5 + offset) % studentIds.length]),
 }));
 
+const demoRequestAt = Date.UTC(2026, 10, 3, 10, 0);
+export const DEMO_REQUESTS = [
+  {
+    id: 'r-demo-1',
+    first: 'Avery',
+    last: 'Johnson',
+    username: 'avery.johnson',
+    email: 'avery.johnson@equnix.test',
+    phone: '+1 214 555 0131',
+    role: 'student',
+    status: 'pending',
+    at: demoRequestAt,
+  },
+  {
+    id: 'r-demo-2',
+    first: 'Rohan',
+    last: 'Mehta',
+    username: 'rohan.mehta',
+    email: 'rohan.mehta@equnix.test',
+    phone: '+1 214 555 0132',
+    role: 'instructor',
+    status: 'pending',
+    at: demoRequestAt + 3600000,
+  },
+  {
+    id: 'r-demo-3',
+    first: 'Chloe',
+    last: 'Martin',
+    username: 'chloe.martin',
+    email: 'chloe.martin@equnix.test',
+    phone: '+1 214 555 0133',
+    role: 'viewer',
+    status: 'pending',
+    at: demoRequestAt + 7200000,
+  },
+  {
+    id: 'r-demo-4',
+    first: 'Diego',
+    last: 'Rivera',
+    username: 'diego.rivera',
+    email: 'diego.rivera@equnix.test',
+    phone: '+1 214 555 0134',
+    role: 'student',
+    status: 'approved',
+    at: demoRequestAt - 86400000 * 2,
+    decidedAt: demoRequestAt - 86400000,
+  },
+  {
+    id: 'r-demo-5',
+    first: 'Nina',
+    last: 'Shah',
+    username: 'nina.shah',
+    email: 'nina.shah@equnix.test',
+    phone: '+1 214 555 0135',
+    role: 'instructor',
+    status: 'rejected',
+    reason: 'Please request access with your company email.',
+    at: demoRequestAt - 86400000 * 3,
+    decidedAt: demoRequestAt - 86400000 * 2,
+  },
+];
+
+export const DEMO_OUTBOX = [
+  {
+    id: 'm-demo-1',
+    to: 'diego.rivera@equnix.test',
+    subject: 'Your Equinix Simulator account is approved',
+    body: 'Hello Diego,\n\nYour account request was approved.\n\nUsername: diego.rivera\nTemporary password: DemoPass123\n\nSign in to choose a new password.',
+    at: demoRequestAt - 86400000,
+    status: 'sent',
+    mode: 'outlook',
+  },
+  {
+    id: 'm-demo-2',
+    to: 'nina.shah@equnix.test',
+    subject: 'Your Equinix Simulator account request',
+    body: 'Hello Nina,\n\nYour account request was not approved.\n\nReason: Please request access with your company email.',
+    at: demoRequestAt - 86400000 * 2,
+    status: 'sent',
+    mode: 'outlook',
+  },
+  {
+    id: 'm-demo-3',
+    to: 'avery.johnson@equnix.test',
+    subject: 'Equinix Simulator request received',
+    body: 'Hello Avery,\n\nYour account request is waiting for an administrator decision.',
+    at: demoRequestAt,
+    status: 'logged',
+    mode: 'outlook',
+  },
+];
+
 const n = (id, name, kind, children = []) => ({ id, name, kind, children });
 const ups = (s, i) => {
   const k = `${s}${i}`;
