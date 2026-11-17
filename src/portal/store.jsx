@@ -5,6 +5,7 @@ import { syncCatalog } from './catalog';
 import { DEFAULT_TOPOLOGY } from './power';
 
 const KEY = 'equnix-v5';
+const DEMO_DATA_VERSION = 2;
 const load = () => {
   try {
     const s = JSON.parse(localStorage.getItem(KEY));
@@ -189,6 +190,13 @@ function reduce(s, a) {
 
 // Brings saved data from older versions up to date: new lists, and the original power design as the default topology.
 function migrate(s) {
+  if (s.demoDataVersion !== DEMO_DATA_VERSION) {
+    s.users = USERS.map((u) => ({ ...u }));
+    s.groups = GROUPS.map((g) => ({ ...g, instructorIds: [...g.instructorIds], studentIds: [...g.studentIds] }));
+    s.requests = [];
+    s.outbox = [];
+    s.demoDataVersion = DEMO_DATA_VERSION;
+  }
   s.requests = s.requests || [];
   s.outbox = s.outbox || [];
   s.topologies = s.topologies || [];

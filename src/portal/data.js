@@ -1,47 +1,72 @@
+const demoUser = (id, name, username, role, extra = {}) => ({
+  id,
+  name,
+  username,
+  password: role === 'instructor' ? 'teach123' : role === 'viewer' ? 'view123' : 'learn123',
+  role,
+  active: true,
+  ...extra,
+});
+
 export const USERS = [
-  {
-    id: 'u1',
-    name: 'Alex Admin',
-    username: 'admin',
-    password: 'admin123',
-    role: 'admin',
-    active: true,
-  },
-  {
-    id: 'u2',
-    name: 'Ivy Inspector',
-    username: 'instructor',
-    password: 'teach123',
-    role: 'instructor',
-    active: true,
-  },
-  {
-    id: 'u3',
-    name: 'Sam Student',
-    username: 'student',
-    password: 'learn123',
-    role: 'student',
-    active: true,
-    instructorId: 'u2',
-  },
-  {
-    id: 'u4',
-    name: 'Priya Nair',
-    username: 'priya',
-    password: 'learn123',
-    role: 'student',
-    active: true,
-    instructorId: 'u2',
-  },
-  {
-    id: 'u5',
-    name: 'Marcus Lee',
-    username: 'marcus',
-    password: 'learn123',
-    role: 'student',
-    active: true,
-    instructorId: 'u2',
-  },
+  demoUser('u1', 'Alex Admin', 'admin', 'admin', { password: 'admin123' }),
+  demoUser('u2', 'Ivy Inspector', 'instructor', 'instructor', { trainingRole: 'technician' }),
+  demoUser('u3', 'Jordan Brooks', 'jordan.brooks', 'instructor', { trainingRole: 'engineer' }),
+  demoUser('u4', 'Priya Nair', 'priya.nair', 'instructor', { trainingRole: 'lead' }),
+  demoUser('u5', 'Marcus Lee', 'marcus.lee', 'instructor', { trainingRole: 'technician' }),
+  demoUser('u6', 'Elena Torres', 'elena.torres', 'instructor', { trainingRole: 'engineer' }),
+  demoUser('u7', 'Noah Williams', 'noah.williams', 'instructor', { trainingRole: 'lead' }),
+  demoUser('u8', 'Maya Patel', 'maya.patel', 'instructor', { trainingRole: 'technician' }),
+  demoUser('u9', 'Liam Chen', 'liam.chen', 'instructor', { trainingRole: 'engineer' }),
+  demoUser('u10', 'Sofia Garcia', 'sofia.garcia', 'instructor', { trainingRole: 'lead' }),
+  demoUser('u11', 'Ethan Wilson', 'ethan.wilson', 'instructor', { trainingRole: 'technician' }),
+  demoUser('u12', 'Ava Robinson', 'ava.robinson', 'instructor', { trainingRole: 'engineer' }),
+  demoUser('u13', 'Daniel Kim', 'daniel.kim', 'instructor', { trainingRole: 'lead' }),
+  demoUser('u14', 'Grace Thompson', 'grace.thompson', 'instructor', { trainingRole: 'technician' }),
+  demoUser('u15', 'Sam Student', 'student', 'student', { mustChange: true }),
+  demoUser('u16', 'Kira Adams', 'kira.adams', 'student'),
+  demoUser('u17', 'Owen Baker', 'owen.baker', 'student'),
+  demoUser('u18', 'Nora Campbell', 'nora.campbell', 'student', { active: false }),
+  demoUser('u19', 'Leo Davis', 'leo.davis', 'student'),
+  demoUser('u20', 'Amara Evans', 'amara.evans', 'student'),
+  demoUser('u21', 'Theo Foster', 'theo.foster', 'student'),
+  demoUser('u22', 'Zoe Green', 'zoe.green', 'student', { mustChange: true }),
+  demoUser('u23', 'Mason Harris', 'mason.harris', 'student'),
+  demoUser('u24', 'Isla Jackson', 'isla.jackson', 'student'),
+  demoUser('u25', 'Caleb King', 'caleb.king', 'student'),
+  demoUser('u26', 'Layla Lewis', 'layla.lewis', 'student'),
+  demoUser('u27', 'Eli Mitchell', 'eli.mitchell', 'student'),
+  demoUser('u28', 'Ruby Nelson', 'ruby.nelson', 'student'),
+  demoUser('u29', 'Finn Ortiz', 'finn.ortiz', 'student'),
+  demoUser('u30', 'Mila Parker', 'mila.parker', 'student'),
+  demoUser('u31', 'Hugo Quinn', 'hugo.quinn', 'student'),
+  demoUser('u32', 'Sana Reed', 'sana.reed', 'student'),
+  demoUser('u33', 'Arlo Scott', 'arlo.scott', 'student'),
+  demoUser('u34', 'Tessa Turner', 'tessa.turner', 'student'),
+  demoUser('u35', 'Jude Underwood', 'jude.underwood', 'student'),
+  demoUser('u36', 'Wren Vega', 'wren.vega', 'student'),
+  demoUser('u37', 'Max Walker', 'max.walker', 'student'),
+  demoUser('u38', 'Luna Xu', 'luna.xu', 'student'),
+  demoUser('u39', 'Kai Young', 'kai.young', 'student'),
+  demoUser('u40', 'Iris Zimmerman', 'iris.zimmerman', 'student'),
+  demoUser('u41', 'Aiden Allen', 'aiden.allen', 'student'),
+  demoUser('u42', 'Bella Bennett', 'bella.bennett', 'student'),
+  demoUser('u43', 'Carter Cooper', 'carter.cooper', 'student'),
+  demoUser('u44', 'Daisy Edwards', 'daisy.edwards', 'student'),
+  demoUser('u45', 'Emmett Flores', 'emmett.flores', 'student'),
+  demoUser('u46', 'Freya Griffin', 'freya.griffin', 'student'),
+  demoUser('u47', 'Gavin Hayes', 'gavin.hayes', 'student'),
+  demoUser('u48', 'Hana Ingram', 'hana.ingram', 'student'),
+  demoUser('u49', 'Ivan Jones', 'ivan.jones', 'student'),
+  demoUser('u50', 'Jessa Knight', 'jessa.knight', 'student'),
+  demoUser('u51', 'Morgan Manager', 'manager', 'viewer'),
+  demoUser('u52', 'Harper Cole', 'harper.cole', 'viewer'),
+  demoUser('u53', 'Quinn Morgan', 'quinn.morgan', 'viewer'),
+  demoUser('u54', 'Riley Stone', 'riley.stone', 'viewer'),
+  demoUser('u55', 'Casey Walsh', 'casey.walsh', 'viewer'),
+  demoUser('u56', 'Taylor Woods', 'taylor.woods', 'viewer'),
+  demoUser('u57', 'Jamie York', 'jamie.york', 'viewer'),
+  demoUser('u58', 'Robin Zane', 'robin.zane', 'viewer'),
 ];
 
 export const TRAINING_ROLES = {
@@ -65,23 +90,32 @@ export const ACCOUNT_ROLES = [
   ['viewer', 'Management viewer'],
 ];
 
-USERS.push({
-  id: 'u6',
-  name: 'Morgan Manager',
-  username: 'manager',
-  password: 'view123',
-  role: 'viewer',
-  active: true,
-});
-
 USERS.forEach((u) => {
-  if (u.role === 'instructor') u.trainingRole = 'technician';
+  if (u.role === 'instructor' && !u.trainingRole) u.trainingRole = 'technician';
   u.email = `${u.username}@equnix.test`;
   u.status = 'active';
   u.createdAt = Date.UTC(2026, 8, 1);
 });
 
-export const GROUPS = [{ id: 'g1', name: 'Cohort 1', instructorIds: ['u2'], studentIds: ['u3', 'u4', 'u5'] }];
+const instructorIds = USERS.filter((u) => u.role === 'instructor').map((u) => u.id);
+const studentIds = USERS.filter((u) => u.role === 'student').map((u) => u.id);
+const groupNames = [
+  'Cohort 1',
+  'Cohort 2',
+  'North Operations',
+  'South Operations',
+  'Night Shift',
+  'Incident Response',
+  'New Starters',
+  'Leadership Lab',
+];
+
+export const GROUPS = groupNames.map((name, index) => ({
+  id: `g${index + 1}`,
+  name,
+  instructorIds: [instructorIds[index % instructorIds.length], instructorIds[(index + 3) % instructorIds.length]],
+  studentIds: Array.from({ length: 10 }, (_, offset) => studentIds[(index * 5 + offset) % studentIds.length]),
+}));
 
 const n = (id, name, kind, children = []) => ({ id, name, kind, children });
 const ups = (s, i) => {

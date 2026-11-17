@@ -519,7 +519,12 @@ export default function Admin() {
   const [role, setRole] = useState('all');
   const [adding, setAdding] = useState(false);
   const [profileId, setProfileId] = useState(null);
+  const [userPage, setUserPage] = useState(1);
   const rows = s.users.filter((u) => u.role !== 'admin' && (role === 'all' || u.role === role));
+  const userPageSize = 10;
+  const userPages = Math.max(1, Math.ceil(rows.length / userPageSize));
+  const currentUserPage = Math.min(userPage, userPages);
+  const userRows = rows.slice((currentUserPage - 1) * userPageSize, currentUserPage * userPageSize);
 
   const createUser = (user, groupIds) => {
     d({ t: 'user', u: user });
@@ -567,7 +572,14 @@ export default function Admin() {
         <>
           <div className="pt-filter">
             {['all', 'instructor', 'student', 'viewer'].map((r) => (
-              <button key={r} className={`pt-btn ghost ${role === r ? 'on' : ''}`} onClick={() => setRole(r)}>
+              <button
+                key={r}
+                className={`pt-btn ghost ${role === r ? 'on' : ''}`}
+                onClick={() => {
+                  setRole(r);
+                  setUserPage(1);
+                }}
+              >
                 {r === 'all' ? 'All users' : r + 's'}
               </button>
             ))}
@@ -588,10 +600,23 @@ export default function Admin() {
                 </tr>
               </thead>
               <tbody>
-                {rows.map((u) => {
+                {userRows.map((u) => {
                   const groups = groupsOf(s, u.id);
                   return (
-                    <tr key={u.id}>
+                    <tr
+                      key={u.id}
+                      className="pt-clickable"
+                      tabIndex="0"
+                      onClick={(e) => {
+                        if (!e.target.closest('button')) setProfileId(u.id);
+                      }}
+                      onKeyDown={(e) => {
+                        if ((e.key === 'Enter' || e.key === ' ') && !e.target.closest('button')) {
+                          e.preventDefault();
+                          setProfileId(u.id);
+                        }
+                      }}
+                    >
                       <td>
                         <span className="pt-avatar" aria-hidden>
                           {u.name
@@ -636,6 +661,32 @@ export default function Admin() {
                 })}
               </tbody>
             </table>
+            <div className="pt-pager" aria-label="User pages">
+              <button
+                className="pt-btn ghost"
+                disabled={currentUserPage === 1}
+                onClick={() => setUserPage(currentUserPage - 1)}
+              >
+                Previous
+              </button>
+              {Array.from({ length: userPages }, (_, i) => (
+                <button
+                  key={i}
+                  className={`pt-btn ghost ${currentUserPage === i + 1 ? 'on' : ''}`}
+                  onClick={() => setUserPage(i + 1)}
+                >
+                  {i + 1}
+                </button>
+              ))}
+              <button
+                className="pt-btn ghost"
+                disabled={currentUserPage === userPages}
+                onClick={() => setUserPage(currentUserPage + 1)}
+              >
+                Next
+              </button>
+              <span className="pt-empty">{rows.length} users</span>
+            </div>
           </div>
         </>
       )}

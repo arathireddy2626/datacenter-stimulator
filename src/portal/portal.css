@@ -1600,6 +1600,7 @@ button.pt-sn:disabled {
 .pt-root input:focus, .pt-root select:focus, .pt-root textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent); outline: none; }
 .pt-table th { text-transform: uppercase; letter-spacing: 0.1em; font-size: 0.72rem; color: var(--accent); }
 .pt-table tbody tr:hover { background: color-mix(in srgb, var(--accent) 7%, transparent); }
+.pt-table tbody tr.pt-clickable { cursor: pointer; }
 .pt-eqcard > header h4 { text-transform: uppercase; letter-spacing: 0.1em; }
 
 /* sign-in screen */
