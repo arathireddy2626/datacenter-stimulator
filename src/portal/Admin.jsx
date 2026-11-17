@@ -11,6 +11,7 @@ import Topologies from './Topologies';
 import Requests from './Requests';
 import { GroupLinks, GroupMembers } from './GroupRoster';
 import { makePassword } from './access';
+import { deliverEmail } from './mailer';
 
 const statusOf = (u) => (!u.active ? 'Disabled' : u.mustChange ? 'Awaiting first login' : 'Active');
 const copy = (text) => navigator.clipboard?.writeText(text);
@@ -144,7 +145,7 @@ function check(form, groupIds, users) {
   return errors;
 }
 
-function AddUser({ state, onCreate, onClose }) {
+function AddUser({ state, d, onCreate, onClose }) {
   const [form, setForm] = useState({
     name: '',
     email: '',
@@ -180,31 +181,31 @@ function AddUser({ state, onCreate, onClose }) {
       status: 'active',
       createdAt: Date.now(),
     };
+    const mail = {
+      id: 'm' + Date.now() + Math.random(),
+      to: email,
+      subject: 'Your Equinix Simulator account',
+      body: `Hello ${user.name},\n\nYour Equinix Simulator account has been created.\n\nUsername: ${user.username}\nTemporary password: ${tempPassword}\n\nSign in with these details. You will be asked to choose a new password the first time.`,
+      at: Date.now(),
+      status: 'sending',
+    };
     onCreate(user, groupIds);
-    setCreated(user);
+    d({ t: 'outbox', mail });
+    deliverEmail(d, mail);
+    setCreated({ ...user, mail });
   };
 
   if (created) {
-    const note = `Username: ${created.username}\nTemporary password: ${created.password}`;
     return (
       <div className="pt-modal">
         <div className="pt-sheet one" role="dialog" aria-label="Account created">
           <div>
             <h3>Profile created for {created.name}</h3>
             <p className="pt-empty">
-              Share these details. They choose their own password at "Activate your account" on the sign-in
-              page.
+              Login details are being sent to <b>{created.email}</b>. They choose their own password at
+              "Activate your account" on the sign-in page.
             </p>
-            <dl>
-              <dt>Username</dt>
-              <dd className="mono">{created.username}</dd>
-              <dt>Temporary password</dt>
-              <dd className="mono">{created.password}</dd>
-            </dl>
             <div className="pt-actions">
-              <button className="pt-btn" onClick={() => copy(note)}>
-                Copy details
-              </button>
               <button className="pt-btn ghost" onClick={onClose}>
                 Done
               </button>
@@ -606,7 +607,7 @@ export default function Admin() {
       {tab === 'topo' && <Topologies s={s} d={d} />}
       {tab === 'requests' && <Requests s={s} d={d} />}
       {tab === 'lib' && <Library failures={s.failures} d={d} />}
-      {adding && <AddUser state={s} onCreate={createUser} onClose={() => setAdding(false)} />}
+      {adding && <AddUser state={s} d={d} onCreate={createUser} onClose={() => setAdding(false)} />}
       {profileId && (
         <Profile
           user={s.users.find((u) => u.id === profileId)}

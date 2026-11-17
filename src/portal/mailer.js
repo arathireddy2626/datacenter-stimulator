@@ -29,3 +29,20 @@ export async function sendEmail({ to, subject, body }) {
     clearTimeout(timer);
   }
 }
+
+export function deliverEmail(d, entry) {
+  d({ t: 'outboxUpdate', id: entry.id, patch: { status: 'sending', error: undefined } });
+  sendEmail({ to: entry.to, subject: entry.subject, body: entry.body }).then((result) =>
+    d({
+      t: 'outboxUpdate',
+      id: entry.id,
+      patch: result.ok
+        ? {
+            status: result.mode === 'log' ? 'logged' : 'sent',
+            mode: result.mode,
+            previewUrl: result.previewUrl,
+          }
+        : { status: 'failed', error: result.error },
+    }),
+  );
+}

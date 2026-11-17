@@ -1,27 +1,9 @@
 import { useEffect, useState } from 'react';
 import { ACCOUNT_ROLES, TRAINING_ROLES } from './data';
 import { makePassword } from './access';
-import { emailServerStatus, sendEmail } from './mailer';
+import { deliverEmail, emailServerStatus } from './mailer';
 
 const when = (t) => new Date(t).toLocaleString();
-
-// Sends one message through the email server and records what happened.
-function deliver(d, entry) {
-  d({ t: 'outboxUpdate', id: entry.id, patch: { status: 'sending', error: undefined } });
-  sendEmail({ to: entry.to, subject: entry.subject, body: entry.body }).then((result) =>
-    d({
-      t: 'outboxUpdate',
-      id: entry.id,
-      patch: result.ok
-        ? {
-            status: result.mode === 'log' ? 'logged' : 'sent',
-            mode: result.mode,
-            previewUrl: result.previewUrl,
-          }
-        : { status: 'failed', error: result.error },
-    }),
-  );
-}
 
 const STATUS = { sending: 'Sending', sent: 'Sent', logged: 'Not delivered (log mode)', failed: 'Not sent' };
 
@@ -66,7 +48,7 @@ function EmailLog({ s, d }) {
               </a>
             )}
             {(m.status === 'failed' || m.status === 'logged' || !m.status) && (
-              <button className="pt-btn ghost" onClick={() => deliver(d, m)}>
+              <button className="pt-btn ghost" onClick={() => deliverEmail(d, m)}>
                 Send again
               </button>
             )}
@@ -97,7 +79,7 @@ function Review({ request, s, d, onDone }) {
       status: 'sending',
     };
     d({ t: 'outbox', mail: entry });
-    deliver(d, entry);
+    deliverEmail(d, entry);
   };
 
   const approve = () => {
