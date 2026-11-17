@@ -15,6 +15,7 @@ function EmailLog({ s, d }) {
   const mails = s.outbox || [];
   const modeText = {
     smtp: 'delivering through your mail account',
+    outlook: 'delivering through Outlook',
     test: 'test inbox (messages are previewed, not delivered)',
     log: 'log mode (nothing is delivered)',
   };

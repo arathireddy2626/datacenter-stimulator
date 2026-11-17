@@ -2,6 +2,7 @@
 //
 // Modes (set MAIL_MODE, or leave it empty to choose automatically):
 //   smtp - send through a real mail account. Needs SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS.
+//   outlook - send through Outlook.com by default. Needs SMTP_USER and an app password.
 //   test - send through a free throwaway test inbox (Ethereal). Nothing reaches a real person,
 //          but every message gets a link to preview it. Used when no SMTP settings are given.
 //   log  - do not send anything, just report success. Used if the test inbox cannot be reached.
@@ -20,12 +21,13 @@ let cached = null;
 async function getTransport() {
   if (cached) return cached;
   const requested = (process.env.MAIL_MODE || (process.env.SMTP_HOST ? 'smtp' : 'test')).toLowerCase();
-  if (requested === 'smtp') {
+  if (requested === 'smtp' || requested === 'outlook') {
+    const outlook = requested === 'outlook';
     const port = Number(process.env.SMTP_PORT || 587);
     cached = {
-      mode: 'smtp',
+      mode: outlook ? 'outlook' : 'smtp',
       transport: nodemailer.createTransport({
-        host: process.env.SMTP_HOST,
+        host: process.env.SMTP_HOST || (outlook ? 'smtp-mail.outlook.com' : undefined),
         port,
         secure: process.env.SMTP_SECURE ? process.env.SMTP_SECURE === 'true' : port === 465,
         auth: process.env.SMTP_USER
