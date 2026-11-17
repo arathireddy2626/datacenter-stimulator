@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useStore } from './store';
 import { Brand, Clock, Field, ThemeToggle } from './ui';
 import { isEmail, isPhone } from './access';
+import { ACCOUNT_ROLES } from './data';
 
 // Rename these to the equipment or systems you want shown on the login screen.
 const ITEMS = ['Item 1', 'Item 2', 'Item 3'];
@@ -41,7 +42,7 @@ export default function Login({ onLogin, theme, onToggle }) {
   const [form, setForm] = useState({ username: '', password: '', code: '', confirm: '' });
   const [error, setError] = useState('');
   const [fieldErrors, setFieldErrors] = useState({});
-  const [req, setReq] = useState({ first: '', last: '', username: '', email: '', phone: '' });
+  const [req, setReq] = useState({ first: '', last: '', username: '', email: '', phone: '', role: '' });
   const [sent, setSent] = useState(false);
   const setR = (key) => (e) => setReq({ ...req, [key]: e.target.value });
   const set = (key) => (e) => setForm({ ...form, [key]: e.target.value });
@@ -72,6 +73,7 @@ export default function Login({ onLogin, theme, onToggle }) {
     const pending = (state.requests || []).filter((r) => r.status === 'pending');
     if (!req.first.trim()) errors.first = 'Enter your first name.';
     if (!req.last.trim()) errors.last = 'Enter your last name.';
+    if (!ACCOUNT_ROLES.some(([key]) => key === req.role)) errors.role = 'Choose the role you are requesting.';
     if (!/^[a-z0-9._-]{3,20}$/.test(username))
       errors.username = 'Use 3 to 20 letters, numbers, dots, dashes or underscores.';
     else if (state.users.some((u) => u.username === username) || pending.some((r) => r.username === username))
@@ -91,6 +93,7 @@ export default function Login({ onLogin, theme, onToggle }) {
         username,
         email,
         phone: req.phone.trim(),
+        role: req.role,
         status: 'pending',
         at: Date.now(),
       },
@@ -199,6 +202,16 @@ export default function Login({ onLogin, theme, onToggle }) {
                 </Field>
                 <Field label="Last name" error={fieldErrors.last}>
                   <input value={req.last} onChange={setR('last')} autoComplete="family-name" />
+                </Field>
+                <Field label="Role" error={fieldErrors.role}>
+                  <select value={req.role} onChange={setR('role')}>
+                    <option value="">Choose your role</option>
+                    {ACCOUNT_ROLES.map(([key, label]) => (
+                      <option key={key} value={key}>
+                        {label}
+                      </option>
+                    ))}
+                  </select>
                 </Field>
                 <Field label="Preferred username" error={fieldErrors.username}>
                   <input value={req.username} onChange={setR('username')} autoComplete="off" />

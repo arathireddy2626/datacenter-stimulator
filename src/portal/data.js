@@ -59,6 +59,12 @@ export const TRAINING_ROLES = {
   },
 };
 
+export const ACCOUNT_ROLES = [
+  ['student', 'Student'],
+  ['instructor', 'Instructor'],
+  ['viewer', 'Management viewer'],
+];
+
 USERS.push({
   id: 'u6',
   name: 'Morgan Manager',

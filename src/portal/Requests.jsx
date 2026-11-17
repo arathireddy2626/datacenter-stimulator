@@ -1,13 +1,8 @@
 import { useEffect, useState } from 'react';
-import { TRAINING_ROLES } from './data';
+import { ACCOUNT_ROLES, TRAINING_ROLES } from './data';
 import { makePassword } from './access';
 import { emailServerStatus, sendEmail } from './mailer';
 
-const ROLES = [
-  ['student', 'Student'],
-  ['instructor', 'Instructor'],
-  ['viewer', 'Management viewer'],
-];
 const when = (t) => new Date(t).toLocaleString();
 
 // Sends one message through the email server and records what happened.
@@ -83,7 +78,7 @@ function EmailLog({ s, d }) {
 }
 
 function Review({ request, s, d, onDone }) {
-  const [role, setRole] = useState('student');
+  const role = request.role || 'student';
   const [trainingRole, setTrainingRole] = useState('technician');
   const [groupIds, setGroupIds] = useState([]);
   const [reason, setReason] = useState('');
@@ -152,13 +147,10 @@ function Review({ request, s, d, onDone }) {
   return (
     <div className="pt-field pt-review">
       <div className="pt-row cover-row">
-        <select value={role} onChange={(e) => setRole(e.target.value)} aria-label="Role">
-          {ROLES.map(([k, label]) => (
-            <option key={k} value={k}>
-              {label}
-            </option>
-          ))}
-        </select>
+        <span>
+          Requested role:{' '}
+          <b>{ACCOUNT_ROLES.find(([key]) => key === role)?.[1] || 'Student'}</b>
+        </span>
         {role === 'instructor' && (
           <select
             value={trainingRole}
